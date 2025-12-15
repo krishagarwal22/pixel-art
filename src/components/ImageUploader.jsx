@@ -5,7 +5,9 @@ const ImageUploader = () => {
   const [selectedFile, setSelectedFile] = useState();
   const [previewURL, setPreviewURL] = useState();
 
-  const [pixelData, setPixelData] = useState(null);
+  const [height, setHeight] = useState();
+  const [width, setWidth] = useState();
+  const [pixels, setPixels] = useState(null);
 
   const fileInputRef = useRef();
 
@@ -32,9 +34,10 @@ const ImageUploader = () => {
       ctx.drawImage(img, 0, 0);
 
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const pixels = imageData.data;
 
-      setPixelData({ width: img.width, height: img.height, pixels: pixels });
+      setWidth(img.width);
+      setHeight(img.height);
+      setPixels(imageData.data);
     };
   };
 
@@ -67,7 +70,14 @@ const ImageUploader = () => {
         </Box>
       )}
 
-      {pixelData}
+      {pixels && (
+        <Box>
+          <Typography>
+            {" "}
+            height: {height}, width: {width}{" "}
+          </Typography>
+        </Box>
+      )}
     </Box>
   );
 };
