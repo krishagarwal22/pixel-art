@@ -1,84 +1,42 @@
-import React, { useState, useRef } from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import Button from "@mui/material/Button";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
-const ImageUploader = () => {
-  const [selectedFile, setSelectedFile] = useState();
-  const [previewURL, setPreviewURL] = useState();
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
-  const [height, setHeight] = useState();
-  const [width, setWidth] = useState();
-  const [pixels, setPixels] = useState(null);
-
-  const fileInputRef = useRef();
-
-  const handleFileSelect = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      setPreviewURL(URL.createObjectURL(file));
+const ImageUploader = ({ onImageSelect }) => {
+  const uploadHandler = (event) => {
+    const img = event.target.files[0];
+    if (img) {
+      onImageSelect(img);
     }
   };
 
-  const pixelize = () => {
-    if (!previewURL) return;
-
-    const img = new Image();
-    img.src = previewURL;
-
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext("2d");
-
-      ctx.drawImage(img, 0, 0);
-
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-      setWidth(img.width);
-      setHeight(img.height);
-      setPixels(imageData.data);
-    };
-  };
-
   return (
-    <Box>
-      <input
+    <Button
+      component="label"
+      role={undefined}
+      variant="contained"
+      tabIndex={-1}
+      startIcon={<CloudUploadIcon />}
+    >
+      Upload Image
+      <VisuallyHiddenInput
         type="file"
         accept="image/*"
-        style={{ display: "none" }}
-        onChange={handleFileSelect}
-        ref={fileInputRef}
+        onChange={uploadHandler}
       />
-      <Button variant="contained" onClick={() => fileInputRef.current.click()}>
-        Upload Image
-      </Button>
-
-      {previewURL && (
-        <Box mt={2} textAlign="center">
-          <Typography variant="subtitle1" gutterBottom>
-            Preview:
-          </Typography>
-          <img
-            src={previewURL}
-            alt="Selected"
-            style={{ maxWidth: "100%", maxHeight: "300px" }}
-          />
-          <Button variant="contained" onClick={pixelize}>
-            Pixelize
-          </Button>
-        </Box>
-      )}
-
-      {pixels && (
-        <Box>
-          <Typography>
-            {" "}
-            height: {height}, width: {width}{" "}
-          </Typography>
-        </Box>
-      )}
-    </Box>
+    </Button>
   );
 };
 
