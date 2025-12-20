@@ -1,14 +1,20 @@
 import { Box, Typography } from "@mui/material";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useLayoutEffect } from "react";
 import { convertToAscii } from "../utils/ascii";
 
-const AugmentedFeed = () => {
+const FONT_ASPECT = 0.77;
+
+const AugmentedFeed = ({ width, chars }) => {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const requestRef = useRef(null);
 
+  const asciiRef = useRef(null);
+  const textRef = useRef(null);
+
   const [error, setError] = useState("");
   const [ascii, setAscii] = useState("");
+  const [textScale, setTextScale] = useState(1);
 
   useEffect(() => {
     const startWebcam = async () => {
@@ -52,9 +58,8 @@ const AugmentedFeed = () => {
     const canvas = canvasRef.current;
 
     if (video && canvas && video.readyState === 4) {
-      const width = 1000;
       const height = Math.floor(
-        ((0.4 * video.videoHeight) / video.videoWidth) * width
+        ((FONT_ASPECT * video.videoHeight) / video.videoWidth) * width
       );
 
       canvas.width = width;
@@ -62,7 +67,7 @@ const AugmentedFeed = () => {
       const ctx = canvas.getContext("2d");
       ctx.drawImage(video, 0, 0, width, height);
 
-      setAscii(convertToAscii(ctx, width, height));
+      setAscii(convertToAscii(ctx, width, height, chars));
     }
 
     requestRef.current = requestAnimationFrame(asciiFrame);
@@ -72,12 +77,31 @@ const AugmentedFeed = () => {
     requestRef.current = requestAnimationFrame(asciiFrame);
   };
 
+  useLayoutEffect(() => {
+    const handleResize = () => {
+      if (asciiRef.current && textRef.current) {
+        const asciiWidth = asciiRef.current.offsetWidth;
+        const textWidth = textRef.current.offsetWidth;
+
+        if (textWidth > 0) setTextScale(asciiWidth / textWidth);
+      }
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [ascii, width]);
+
   return (
     <Box>
+      <canvas ref={canvasRef} style={{ display: "none" }} />
       {error ? (
         <Typography>{error}</Typography>
       ) : (
-        <Box sx={{ display: "flex", width: "100%" }}>
+        <Box sx={{ display: "flex", width: "100%", gap: 1 }}>
           <Box sx={{ flex: 1 }}>
             <video
               ref={videoRef}
@@ -85,25 +109,35 @@ const AugmentedFeed = () => {
               playsInline
               muted
               onPlay={startAscii}
-              sx={{ flex: 1 }}
-              style={{ width: "100%" }}
+              style={{ width: "100%", display: "block" }}
             />
           </Box>
-          <Box sx={{ flex: 0 }}>
-            <canvas ref={canvasRef} style={{ display: "none" }} />
-          </Box>
-          <Box sx={{ flex: 1 }}>
+          <Box
+            ref={asciiRef}
+            sx={{
+              flex: 1,
+              position: "relative",
+              overflow: "hidden",
+              background: "#fff",
+            }}
+          >
             <pre
+              ref={textRef}
               style={{
                 fontFamily: "Roboto Mono, monospace",
                 whiteSpace: "pre",
-                overflowX: "auto",
-                fontSize: "8px",
+                fontSize: "10px",
+                lineHeight: "0.8em",
                 color: "#000",
                 background: "#fff",
-                padding: "20px",
-                borderRadius: "8px",
-                width: "100%",
+                margin: 0,
+                padding: 0,
+                transform: `scale(${textScale})`,
+                transformOrigin: "top left",
+                width: "fit-content",
+                position: "absolute",
+                top: 0,
+                left: 0,
               }}
             >
               {ascii}
