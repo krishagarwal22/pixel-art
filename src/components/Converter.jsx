@@ -1,5 +1,6 @@
 import { Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { convertToAscii } from "../utils/ascii";
 
 const Converter = ({ selectedImage }) => {
   const [ascii, setAscii] = useState("");
@@ -8,22 +9,6 @@ const Converter = ({ selectedImage }) => {
     if (!selectedImage) return;
 
     const chars = "Ñ@#W$9876543210?!abc;:+=-,._";
-    const levels = chars.length;
-
-    const pixelToChar = (r, g, b, a) => {
-      const alpha = a / 255;
-      const weightedAvg = (v) => {
-        return v * alpha + 255 * (1 - alpha);
-      };
-
-      const red = weightedAvg(r);
-      const green = weightedAvg(g);
-      const blue = weightedAvg(b);
-
-      const brightness = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-      const charIdx = Math.floor((brightness / 255) * (levels - 1));
-      return chars[charIdx];
-    };
 
     const img = new Image();
     img.src = URL.createObjectURL(selectedImage);
@@ -38,22 +23,7 @@ const Converter = ({ selectedImage }) => {
       const ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0, width, height);
 
-      const pixels = ctx.getImageData(0, 0, width, height).data;
-
-      let asciiString = "";
-
-      for (let p = 0; p < pixels.length / 4; p++) {
-        asciiString += pixelToChar(
-          pixels[p * 4],
-          pixels[p * 4 + 1],
-          pixels[p * 4 + 2],
-          pixels[p * 4 + 3]
-        );
-
-        if ((p + 1) % width == 0) {
-          asciiString += "\n";
-        }
-      }
+      const asciiString = convertToAscii(ctx, width, height, chars);
 
       setAscii(asciiString);
     };
