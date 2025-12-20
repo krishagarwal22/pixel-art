@@ -1,4 +1,5 @@
-export const convertToAscii = (ctx, width, height, chars) => {
+export const convertToAscii = (ctx, width, height) => {
+  const chars = "@%#*+=-:. ";
   const levels = chars.length;
 
   const pixelToChar = (r, g, b, a) => {

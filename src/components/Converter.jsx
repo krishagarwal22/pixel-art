@@ -8,8 +8,6 @@ const Converter = ({ selectedImage }) => {
   useEffect(() => {
     if (!selectedImage) return;
 
-    const chars = "Ñ@#W$9876543210?!abc;:+=-,._";
-
     const img = new Image();
     img.src = URL.createObjectURL(selectedImage);
     img.onload = () => {
@@ -23,7 +21,7 @@ const Converter = ({ selectedImage }) => {
       const ctx = canvas.getContext("2d");
       ctx.drawImage(img, 0, 0, width, height);
 
-      const asciiString = convertToAscii(ctx, width, height, chars);
+      const asciiString = convertToAscii(ctx, width, height);
 
       setAscii(asciiString);
     };
