@@ -1,14 +1,23 @@
-import Converter from "./components/Converter";
-import ImageUploader from "./components/ImageUploader";
+import AugmentedFeed from "./components/AugmentedFeed";
 import { useState } from "react";
+import Slider from "@mui/material/Slider";
 
 function App() {
-  const [image, setImage] = useState(null);
+  /* resolution in terms of tens of characters per line */
+  const [asciiWidth, setAsciiWidth] = useState(25);
+  /* characters used in ascii conversion, from darkest to lightest */
+  const [chars, setChars] = useState(" .:-=+*#%@");
+
+  const updateWidth = (event, value) => {
+    setAsciiWidth(value);
+  };
 
   return (
     <div style={{ padding: "50px" }}>
-      <ImageUploader onImageSelect={setImage} />
-      <Converter selectedImage={image} />
+      {/* <Box sx={{ width: "200" }}> */}
+      <Slider value={asciiWidth} onChange={updateWidth} />
+      {/* </Box> */}
+      <AugmentedFeed width={10 * asciiWidth} chars={chars} />
     </div>
   );
 }
