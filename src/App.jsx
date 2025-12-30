@@ -3,8 +3,10 @@ import { useState } from "react";
 import Slider from "@mui/material/Slider";
 
 function App() {
-  const [asciiWidth, setAsciiWidth] = useState(50);
-  const [chars, setChars] = useState("@%#*+=-:. ");
+  /* resolution in terms of tens of characters per line */
+  const [asciiWidth, setAsciiWidth] = useState(25);
+  /* characters used in ascii conversion, from darkest to lightest */
+  const [chars, setChars] = useState(" .:-=+*#%@");
 
   const updateWidth = (event, value) => {
     setAsciiWidth(value);

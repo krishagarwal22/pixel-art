@@ -118,7 +118,7 @@ const AugmentedFeed = ({ width, chars }) => {
               flex: 1,
               position: "relative",
               overflow: "hidden",
-              background: "#fff",
+              // background: "#fff",
             }}
           >
             <pre
@@ -128,8 +128,8 @@ const AugmentedFeed = ({ width, chars }) => {
                 whiteSpace: "pre",
                 fontSize: "10px",
                 lineHeight: "0.8em",
-                color: "#000",
-                background: "#fff",
+                color: "#fff",
+                // background: "#fff",
                 margin: 0,
                 padding: 0,
                 transform: `scale(${textScale})`,
