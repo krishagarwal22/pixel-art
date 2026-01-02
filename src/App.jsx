@@ -4,7 +4,7 @@ import Slider from "@mui/material/Slider";
 
 function App() {
   /* resolution in terms of tens of characters per line */
-  const [asciiWidth, setAsciiWidth] = useState(70);
+  const [asciiWidth, setAsciiWidth] = useState(50);
   /* characters used in ascii conversion, from darkest to lightest */
   const [chars, setChars] = useState(" .:-=+*#%@");
 
@@ -14,10 +14,8 @@ function App() {
 
   return (
     <div style={{ padding: "50px" }}>
-      {/* <Box sx={{ width: "200" }}> */}
       <Slider value={asciiWidth} onChange={updateWidth} />
-      {/* </Box> */}
-      <AugmentedFeed width={4 * asciiWidth + 25} chars={chars} />
+      <AugmentedFeed width={6 * asciiWidth + 25} chars={chars} />
     </div>
   );
 }
