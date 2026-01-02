@@ -3,15 +3,8 @@ export const convertToAscii = (ctx, width, height, chars) => {
 
   const pixelToChar = (r, g, b, a) => {
     const alpha = a / 255;
-    const weightedAvg = (v) => {
-      return v * alpha + 255 * (1 - alpha);
-    };
-
-    const red = weightedAvg(r);
-    const green = weightedAvg(g);
-    const blue = weightedAvg(b);
-
-    const brightness = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+    const color = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    const brightness = color * alpha + 255 * (1 - alpha);
     const charIdx = Math.floor((brightness / 255) * (levels - 1));
     return chars[charIdx];
   };
