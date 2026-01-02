@@ -12,9 +12,17 @@ const AugmentedFeed = ({ width, chars }) => {
   const asciiRef = useRef(null);
   const textRef = useRef(null);
 
+  const widthRef = useRef(width);
+  const charsRef = useRef(chars);
+
   const [error, setError] = useState("");
   const [ascii, setAscii] = useState("");
   const [textScale, setTextScale] = useState(1);
+
+  useEffect(() => {
+    widthRef.current = width;
+    charsRef.current = chars;
+  }, [width, chars]);
 
   useEffect(() => {
     const startWebcam = async () => {
@@ -58,16 +66,19 @@ const AugmentedFeed = ({ width, chars }) => {
     const canvas = canvasRef.current;
 
     if (video && canvas && video.readyState === 4) {
+      const currentWidth = widthRef.current;
+      const currentChars = charsRef.current;
+
       const height = Math.floor(
-        ((FONT_ASPECT * video.videoHeight) / video.videoWidth) * width
+        ((FONT_ASPECT * video.videoHeight) / video.videoWidth) * currentWidth
       );
 
-      canvas.width = width;
+      canvas.width = currentWidth;
       canvas.height = height;
       const ctx = canvas.getContext("2d");
-      ctx.drawImage(video, 0, 0, width, height);
+      ctx.drawImage(video, 0, 0, currentWidth, height);
 
-      setAscii(convertToAscii(ctx, width, height, chars));
+      setAscii(convertToAscii(ctx, currentWidth, height, currentChars));
     }
 
     requestRef.current = requestAnimationFrame(asciiFrame);
